@@ -1,0 +1,449 @@
+<html>
+<head>
+    <title>QRX PLAY</title>
+    <script src="jquery-1.11.3.js"></script>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>-->
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <style>
+        /* colorpicker styles */
+        .colorpicker {
+            background-color: #222222;
+            border-radius: 5px 5px 5px 5px;
+            box-shadow: 2px 2px 2px #444444;
+            /*color: #FFFFFF;*/
+            font-size: 12px;
+            width: 460px;
+        }
+
+        #picker {
+            cursor: crosshair;
+            float: left;
+            margin: 10px;
+            border: 0;
+        }
+
+        .controls {
+            float: right;
+            margin: 10px;
+        }
+
+        .controls > div {
+            border: 1px solid #2F2F2F;
+            margin-bottom: 5px;
+            overflow: hidden;
+            padding: 5px;
+        }
+
+        .controls label {
+            float: left;
+        }
+
+        .controls > div input {
+            background-color: #121212;
+            border: 1px solid #2F2F2F;
+            color: #DDDDDD;
+            float: right;
+            font-size: 10px;
+            height: 14px;
+            margin-left: 6px;
+            text-align: center;
+            text-transform: uppercase;
+            width: 75px;
+        }
+
+        .preview1, .preview2, .preview3 {
+            background: url("../images/select.png") repeat scroll center center transparent;
+            border-radius: 3px;
+            box-shadow: 2px 2px 2px #444444;
+            cursor: pointer;
+            height: 30px;
+            width: 30px;
+            float: left;
+            margin: 5px;
+        }
+
+    </style>
+
+    <script src="mqttws31.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var wsbroker = "mqtt.espert.io";  //mqtt websocket enabled broker
+        var wsport = 8000 // port for above
+        client = new Paho.MQTT.Client(wsbroker, wsport,
+                "myclientid_" + parseInt(Math.random() * 100, 10));
+
+        client.onConnectionLost = function (responseObject) {
+            console.log("connection lost: " + responseObject.errorMessage);
+        };
+        client.onMessageArrived = function (message) {
+            console.log(message.destinationName, ' -- ', message.payloadString);
+        };
+        var options = {
+            timeout: 3,
+            onSuccess: function () {
+                console.log("mqtt connected");
+            },
+            onFailure: function (message) {
+                console.log("Connection failed: " + message.errorMessage);
+            }
+        };
+        function init() {
+            client.connect(options);
+        }
+    </script>
+
+
+</head>
+
+<body>
+<!--<script>-->
+<!--var $scope = {};-->
+
+<!--var init_speech_recognition = function () {-->
+<!--$scope.start_regcognize = function () {-->
+<!--if ($scope.recognizing) {-->
+<!--console.log("STOP");-->
+<!--$scope.recognition.stop();-->
+<!--return;-->
+<!--}-->
+
+<!--$scope.final_transcript = '';-->
+<!--// $scope.recognition.lang = "th-TH";-->
+<!--$scope.recognition.start();-->
+
+<!--$scope.ignore_onend = false;-->
+<!--start_timestamp = event.timeStamp;-->
+
+
+<!--};-->
+
+<!--$scope.recognition = new webkitSpeechRecognition();-->
+<!--//        $scope.recognition.lang = "th-TH";-->
+<!--$scope.recognition.continuous = true;-->
+<!--$scope.recognition.interimResults = true;-->
+<!--console.log("OK");-->
+
+<!--$scope.recognition.onstart = function () {-->
+<!--$scope.recognizing = true;-->
+<!--console.log("ON START", arguments);-->
+<!--};-->
+
+<!--$scope.recognition.onend = function () {-->
+<!--console.log("ON END", arguments);-->
+<!--$scope.recognizing = false;-->
+<!--if ($scope.ignore_onend) {-->
+<!--return;-->
+<!--}-->
+<!--};-->
+
+<!--$scope.recognition.onresult = function (event) {-->
+<!--console.log(event.results);-->
+<!--var interim_transcript = '';-->
+<!--for (var i = event.resultIndex; i < event.results.length; ++i) {-->
+<!--var _result = event.results[i][0];-->
+<!--if (_result.isFinal) {-->
+<!--$scope.final_transcript += _result.transcript;-->
+<!--} else {-->
+<!--interim_transcript += _result.transcript;-->
+<!--console.log("interim", interim_transcript, _result.confidence);-->
+<!--}-->
+<!--}-->
+<!--console.log("FINAL = ", $scope.final_transcript);-->
+
+<!--//            $scope.$apply();-->
+
+<!--// speak(final_transcript);-->
+<!--$scope.recognizing = false;-->
+<!--}-->
+<!--};-->
+
+<!--var upgrade = function () {-->
+<!--console.log("UPGRADE");-->
+<!--alert("should upgrade the browser");-->
+<!--};-->
+
+<!--if (!('webkitSpeechRecognition' in window)) {-->
+<!--upgrade();-->
+<!--}-->
+<!--else {-->
+<!--init_speech_recognition();-->
+<!--$scope.start_regcognize();-->
+<!--}-->
+
+
+<!--var utterance = new SpeechSynthesisUtterance();-->
+<!--var speak = function (text, endFn, startFn) {-->
+<!--utterance.text = text;-->
+<!--// utterance.lang = 'en-UK';-->
+<!--// utterance.rate = 2;-->
+<!--// utterance.pitch = 0;-->
+<!--// utterance.rate = 0.1;-->
+<!--utterance.pitch = 1.0;-->
+<!--// utterance.volume = 0.5;-->
+<!--utterance.lang = 'th-TH';-->
+
+<!--utterance.onstart = function (event) {-->
+<!--if (startFn) {-->
+<!--startFn(event);-->
+<!--}-->
+<!--};-->
+
+<!--utterance.onend = function (event) {-->
+<!--if (endFn) {-->
+<!--endFn(event);-->
+<!--}-->
+<!--};-->
+
+
+<!--if (!speechSynthesis.speaking) {-->
+<!--// speechSynthesis.speak(utterance, function() {-->
+<!--//   console.log("arguments: ", arguments);-->
+<!--// })-->
+
+<!--}-->
+<!--else {-->
+<!--console.log("SKIP");-->
+<!--}-->
+
+<!--}-->
+
+
+<!--</script>-->
+
+
+<!--<div>-->
+<!--<a href="#" id="start_button" onclick="startDictation(event)">Dictate</a>-->
+<!--</div>-->
+
+<div id="results">
+    <span id="final_span" class="final"></span>
+    <span id="interim_span" class="interim"></span>
+</div>
+
+<script type="text/javascript">
+    var final_transcript = '';
+    var recognizing = false;
+
+    if ('webkitSpeechRecognition' in window) {
+
+        var recognition = new webkitSpeechRecognition();
+
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = function () {
+            console.log("started");
+            recognizing = true;
+        };
+
+        recognition.onerror = function (event) {
+            console.log("error");
+            console.log(event.error);
+        };
+
+        recognition.onend = function () {
+            console.log("end");
+            recognizing = false;
+        };
+
+        recognition.onresult = function (event) {
+            var interim_transcript = '';
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    final_transcript += event.results[i][0].transcript;
+                    console.log("FINAL = ", final_transcript);
+                } else {
+                    interim_transcript += event.results[i][0].transcript;
+                }
+            }
+
+            console.log(interim_transcript);
+            final_transcript = capitalize(final_transcript);
+            final_span.innerHTML = linebreak(final_transcript);
+            interim_span.innerHTML = linebreak(interim_transcript);
+
+        };
+    }
+
+    var two_line = /\n\n/g;
+    var one_line = /\n/g;
+    function linebreak(s) {
+        return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+    }
+
+    function capitalize(s) {
+        return s.replace(s.substr(0, 1), function (m) {
+            return m.toUpperCase();
+        });
+    }
+
+    function startDictation(event) {
+        if (recognizing) {
+            recognition.stop();
+            return;
+        }
+        final_transcript = '';
+        recognition.lang = 'en-US';
+        recognition.start();
+        final_span.innerHTML = '';
+        interim_span.innerHTML = '';
+    }
+</script>
+
+<!-- preview element -->
+<div class="preview1"></div>
+<div class="preview2"></div>
+<div class="preview3"></div>
+
+<!-- colorpicker element -->
+<div class="colorpicker">
+    <!--<canvas id="picker" var="1" width="300" height="300"></canvas>-->
+
+    <div class="controls">
+        <div><label>R</label> <input type="text" id="rVal"/></div>
+        <div><label>G</label> <input type="text" id="gVal"/></div>
+        <div><label>B</label> <input type="text" id="bVal"/></div>
+        <div><label>RGB</label> <input type="text" id="rgbVal"/></div>
+        <div><label>HEX</label> <input type="text" id="hexVal"/></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var fnGenerator = function (pickerSelector, previewSelector) {
+        var fn = function () {
+            var data = {};
+            var bCanPreview = true; // can preview
+
+            // create canvas and context objects
+            var jqPicker = $(pickerSelector);
+            var jqPreview = $(previewSelector);
+            var canvas = jqPicker[0];
+
+            var ctx = canvas.getContext('2d');
+
+            // drawing active image
+            var image = new Image();
+            image.onload = function () {
+                ctx.drawImage(image, 0, 0, image.width, image.height); // draw the image on the canvas
+            };
+
+            // select desired colorwheel
+            var imageSrc = 'images/colorwheel1.png';
+            switch ($(canvas).attr('var')) {
+                case '2':
+                    imageSrc = 'images/colorwheel2.png';
+                    break;
+                case '3':
+                    imageSrc = 'images/colorwheel3.png';
+                    break;
+                case '4':
+                    imageSrc = 'images/colorwheel4.png';
+                    break;
+                case '5':
+                    imageSrc = 'images/colorwheel5.png';
+                    break;
+            }
+            image.src = imageSrc;
+
+            jqPicker.bind('touchmove', function (e) {
+                moveEvent(e);
+            });
+
+            var moveEvent = function (e) {
+                if (bCanPreview) {
+                    // get coordinates of current position
+                    var canvasOffset = $(canvas).offset();
+                    var canvasX = Math.floor(e.pageX - canvasOffset.left);
+                    var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+                    // get current pixel
+                    var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
+                    var pixel = imageData.data;
+
+                    // update preview color
+                    var pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+                    jqPreview.css('backgroundColor', pixelColor);
+
+                    // update controls
+                    $('#rVal').val(pixel[0]);
+                    $('#gVal').val(pixel[1]);
+                    $('#bVal').val(pixel[2]);
+                    $('#rgbVal').val(pixel[0] + ',' + pixel[1] + ',' + pixel[2]);
+
+                    var dColor = pixel[2] + 256 * pixel[1] + 65536 * pixel[0];
+                    $('#hexVal').val('#' + ('0000' + dColor.toString(16)).substr(-6));
+
+                    publishColor();
+                }
+
+            };
+
+            jqPicker.mousemove(function (e) { // mouse move handler
+                moveEvent(e);
+            });
+
+            var publishColor = function () {
+                var _R = data.R;
+                var _G = data.G;
+                var _B = data.B;
+
+                data.R = $('#rVal').val();
+                data.G = $('#gVal').val();
+                data.B = $('#bVal').val();
+
+                console.log("PUBLISH: ", _R+_G+_B, data.R + data.G + data.B);
+
+                if (_R + _G + _B != data.R + data.G + data.B) {
+                    message = new Paho.MQTT.Message(JSON.stringify(data));
+                    message.destinationName = "/qrx/" + pickerSelector.split("#picker")[1];
+                    client.send(message);
+                }
+            };
+
+
+            jqPicker.bind('touchdown', function (e) { // click event handler
+                e.preventDefault();
+                bCanPreview = !bCanPreview;
+                publishColor();
+            });
+
+            jqPicker.bind('mousedown', function (e) { // click event handler
+                e.preventDefault();
+                bCanPreview = !bCanPreview;
+                publishColor();
+            });
+
+
+//            jqPreview.click(function (e) { // preview click
+////                $('.colorpicker').fadeToggle("slow", "linear");
+//                bCanPreview = true;
+//            });
+
+        };
+
+
+        return fn;
+
+    };
+
+
+    $(document).ready(function () {
+        init();
+    });
+    $(fnGenerator('#picker1', '.preview1'));
+    $(fnGenerator('#picker2', '.preview2'));
+    $(fnGenerator('#picker3', '.preview3'));
+
+
+</script>
+<canvas id="picker1" var="2" width="300" height="300"></canvas>
+<canvas id="picker2" var="2" width="300" height="300"></canvas>
+<canvas id="picker3" var="2" width="300" height="300"></canvas>
+<!--<canvas id="picker" var="2" width="300" height="300"></canvas>-->
+<!--or-->
+<!--<canvas id="picker" var="3" width="300" height="300"></canvas>-->
+<!--or-->
+<!--<canvas id="picker" var="4" width="300" height="300"></canvas>-->
+<!--or-->
+<!--<canvas id="picker" var="5" width="300" height="300"></canvas>-->
+</body>
+
+</html>
