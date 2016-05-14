@@ -3,7 +3,7 @@
     <title>QRX PLAY</title>
     <script src="jquery-1.11.3.js"></script>
     <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>-->
-    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <!--<meta name="viewport" content="width=device-width, user-scalable=no"/>-->
     <style>
         /* colorpicker styles */
         .colorpicker {
@@ -15,7 +15,7 @@
             width: 460px;
         }
 
-        #picker {
+        #picker1, #picker2, #picker3 {
             cursor: crosshair;
             float: left;
             margin: 10px;
@@ -52,7 +52,7 @@
         }
 
         .preview1, .preview2, .preview3 {
-            background: url("../images/select.png") repeat scroll center center transparent;
+            /*background: url("../images/select.png") repeat scroll center center transparent;*/
             border-radius: 3px;
             box-shadow: 2px 2px 2px #444444;
             cursor: pointer;
@@ -72,22 +72,28 @@
                 "myclientid_" + parseInt(Math.random() * 100, 10));
 
         client.onConnectionLost = function (responseObject) {
-            console.log("connection lost: " + responseObject.errorMessage);
+            log("connection lost: " + responseObject.errorMessage);
         };
         client.onMessageArrived = function (message) {
-            console.log(message.destinationName, ' -- ', message.payloadString);
+            log(message.destinationName, ' -- ', message.payloadString);
         };
         var options = {
-            timeout: 3,
+            timeout: 10,
             onSuccess: function () {
-                console.log("mqtt connected");
+                log("mqtt connected");
             },
             onFailure: function (message) {
-                console.log("Connection failed: " + message.errorMessage);
+                log("Connection failed: " + message.errorMessage);
             }
         };
         function init() {
             client.connect(options);
+        }
+
+        window.log = function () {
+//            var console = window.console && { log: function() { return "no console."; } };
+            var log = Function.prototype.bind.call(console.log, console);
+            log.apply(console, arguments);
         }
     </script>
 
@@ -95,209 +101,13 @@
 </head>
 
 <body>
-<!--<script>-->
-<!--var $scope = {};-->
 
-<!--var init_speech_recognition = function () {-->
-<!--$scope.start_regcognize = function () {-->
-<!--if ($scope.recognizing) {-->
-<!--console.log("STOP");-->
-<!--$scope.recognition.stop();-->
-<!--return;-->
-<!--}-->
-
-<!--$scope.final_transcript = '';-->
-<!--// $scope.recognition.lang = "th-TH";-->
-<!--$scope.recognition.start();-->
-
-<!--$scope.ignore_onend = false;-->
-<!--start_timestamp = event.timeStamp;-->
-
-
-<!--};-->
-
-<!--$scope.recognition = new webkitSpeechRecognition();-->
-<!--//        $scope.recognition.lang = "th-TH";-->
-<!--$scope.recognition.continuous = true;-->
-<!--$scope.recognition.interimResults = true;-->
-<!--console.log("OK");-->
-
-<!--$scope.recognition.onstart = function () {-->
-<!--$scope.recognizing = true;-->
-<!--console.log("ON START", arguments);-->
-<!--};-->
-
-<!--$scope.recognition.onend = function () {-->
-<!--console.log("ON END", arguments);-->
-<!--$scope.recognizing = false;-->
-<!--if ($scope.ignore_onend) {-->
-<!--return;-->
-<!--}-->
-<!--};-->
-
-<!--$scope.recognition.onresult = function (event) {-->
-<!--console.log(event.results);-->
-<!--var interim_transcript = '';-->
-<!--for (var i = event.resultIndex; i < event.results.length; ++i) {-->
-<!--var _result = event.results[i][0];-->
-<!--if (_result.isFinal) {-->
-<!--$scope.final_transcript += _result.transcript;-->
-<!--} else {-->
-<!--interim_transcript += _result.transcript;-->
-<!--console.log("interim", interim_transcript, _result.confidence);-->
-<!--}-->
-<!--}-->
-<!--console.log("FINAL = ", $scope.final_transcript);-->
-
-<!--//            $scope.$apply();-->
-
-<!--// speak(final_transcript);-->
-<!--$scope.recognizing = false;-->
-<!--}-->
-<!--};-->
-
-<!--var upgrade = function () {-->
-<!--console.log("UPGRADE");-->
-<!--alert("should upgrade the browser");-->
-<!--};-->
-
-<!--if (!('webkitSpeechRecognition' in window)) {-->
-<!--upgrade();-->
-<!--}-->
-<!--else {-->
-<!--init_speech_recognition();-->
-<!--$scope.start_regcognize();-->
-<!--}-->
-
-
-<!--var utterance = new SpeechSynthesisUtterance();-->
-<!--var speak = function (text, endFn, startFn) {-->
-<!--utterance.text = text;-->
-<!--// utterance.lang = 'en-UK';-->
-<!--// utterance.rate = 2;-->
-<!--// utterance.pitch = 0;-->
-<!--// utterance.rate = 0.1;-->
-<!--utterance.pitch = 1.0;-->
-<!--// utterance.volume = 0.5;-->
-<!--utterance.lang = 'th-TH';-->
-
-<!--utterance.onstart = function (event) {-->
-<!--if (startFn) {-->
-<!--startFn(event);-->
-<!--}-->
-<!--};-->
-
-<!--utterance.onend = function (event) {-->
-<!--if (endFn) {-->
-<!--endFn(event);-->
-<!--}-->
-<!--};-->
-
-
-<!--if (!speechSynthesis.speaking) {-->
-<!--// speechSynthesis.speak(utterance, function() {-->
-<!--//   console.log("arguments: ", arguments);-->
-<!--// })-->
-
-<!--}-->
-<!--else {-->
-<!--console.log("SKIP");-->
-<!--}-->
-
-<!--}-->
-
-
-<!--</script>-->
-
-
-<!--<div>-->
-<!--<a href="#" id="start_button" onclick="startDictation(event)">Dictate</a>-->
-<!--</div>-->
-
-<div id="results">
-    <span id="final_span" class="final"></span>
-    <span id="interim_span" class="interim"></span>
-</div>
-
-<script type="text/javascript">
-    var final_transcript = '';
-    var recognizing = false;
-
-    if ('webkitSpeechRecognition' in window) {
-
-        var recognition = new webkitSpeechRecognition();
-
-        recognition.continuous = true;
-        recognition.interimResults = true;
-
-        recognition.onstart = function () {
-            console.log("started");
-            recognizing = true;
-        };
-
-        recognition.onerror = function (event) {
-            console.log("error");
-            console.log(event.error);
-        };
-
-        recognition.onend = function () {
-            console.log("end");
-            recognizing = false;
-        };
-
-        recognition.onresult = function (event) {
-            var interim_transcript = '';
-            for (var i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    final_transcript += event.results[i][0].transcript;
-                    console.log("FINAL = ", final_transcript);
-                } else {
-                    interim_transcript += event.results[i][0].transcript;
-                }
-            }
-
-            console.log(interim_transcript);
-            final_transcript = capitalize(final_transcript);
-            final_span.innerHTML = linebreak(final_transcript);
-            interim_span.innerHTML = linebreak(interim_transcript);
-
-        };
-    }
-
-    var two_line = /\n\n/g;
-    var one_line = /\n/g;
-    function linebreak(s) {
-        return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
-    }
-
-    function capitalize(s) {
-        return s.replace(s.substr(0, 1), function (m) {
-            return m.toUpperCase();
-        });
-    }
-
-    function startDictation(event) {
-        if (recognizing) {
-            recognition.stop();
-            return;
-        }
-        final_transcript = '';
-        recognition.lang = 'en-US';
-        recognition.start();
-        final_span.innerHTML = '';
-        interim_span.innerHTML = '';
-    }
-</script>
-
-<!-- preview element -->
 <div class="preview1"></div>
 <div class="preview2"></div>
 <div class="preview3"></div>
 
 <!-- colorpicker element -->
 <div class="colorpicker">
-    <!--<canvas id="picker" var="1" width="300" height="300"></canvas>-->
-
     <div class="controls">
         <div><label>R</label> <input type="text" id="rVal"/></div>
         <div><label>G</label> <input type="text" id="gVal"/></div>
@@ -306,7 +116,22 @@
         <div><label>HEX</label> <input type="text" id="hexVal"/></div>
     </div>
 </div>
+
 <script type="text/javascript">
+    function findPos(obj) {
+        var curleft = 0,
+                curtop = 0;
+
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+
+            return {x: curleft - document.body.scrollLeft, y: curtop - document.body.scrollTop};
+        }
+    }
+
     var fnGenerator = function (pickerSelector, previewSelector) {
         var fn = function () {
             var data = {};
@@ -343,11 +168,8 @@
             }
             image.src = imageSrc;
 
-            jqPicker.bind('touchmove', function (e) {
-                moveEvent(e);
-            });
-
             var moveEvent = function (e) {
+                bCanPreview = true;
                 if (bCanPreview) {
                     // get coordinates of current position
                     var canvasOffset = $(canvas).offset();
@@ -357,21 +179,25 @@
                     // get current pixel
                     var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
                     var pixel = imageData.data;
+                    var sum = (pixel[0] + pixel[1] + pixel[2]);
 
-                    // update preview color
-                    var pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
-                    jqPreview.css('backgroundColor', pixelColor);
+                    // filter black or white
+                    if (sum != 0 || sum >= 254 * 3) {
+                        // update preview color
+                        var pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+                        jqPreview.css('backgroundColor', pixelColor);
 
-                    // update controls
-                    $('#rVal').val(pixel[0]);
-                    $('#gVal').val(pixel[1]);
-                    $('#bVal').val(pixel[2]);
-                    $('#rgbVal').val(pixel[0] + ',' + pixel[1] + ',' + pixel[2]);
+                        // update controls
+                        $('#rVal').val(pixel[0]);
+                        $('#gVal').val(pixel[1]);
+                        $('#bVal').val(pixel[2]);
+                        $('#rgbVal').val(pixel[0] + ',' + pixel[1] + ',' + pixel[2]);
 
-                    var dColor = pixel[2] + 256 * pixel[1] + 65536 * pixel[0];
-                    $('#hexVal').val('#' + ('0000' + dColor.toString(16)).substr(-6));
+                        var dColor = pixel[2] + 256 * pixel[1] + 65536 * pixel[0];
+                        $('#hexVal').val('#' + ('0000' + dColor.toString(16)).substr(-6));
 
-                    publishColor();
+                        publishColor();
+                    }
                 }
 
             };
@@ -379,6 +205,7 @@
             jqPicker.mousemove(function (e) { // mouse move handler
                 moveEvent(e);
             });
+
 
             var publishColor = function () {
                 var _R = data.R;
@@ -389,34 +216,63 @@
                 data.G = $('#gVal').val();
                 data.B = $('#bVal').val();
 
-                console.log("PUBLISH: ", _R+_G+_B, data.R + data.G + data.B);
+//                log("DIRTY?: ", _R+_G+_B, data.R + data.G + data.B);
 
                 if (_R + _G + _B != data.R + data.G + data.B) {
+                    log("published: ");
                     message = new Paho.MQTT.Message(JSON.stringify(data));
                     message.destinationName = "/qrx/" + pickerSelector.split("#picker")[1];
                     client.send(message);
                 }
             };
 
-
-            jqPicker.bind('touchdown', function (e) { // click event handler
-                e.preventDefault();
-                bCanPreview = !bCanPreview;
-                publishColor();
-            });
-
             jqPicker.bind('mousedown', function (e) { // click event handler
-                e.preventDefault();
                 bCanPreview = !bCanPreview;
                 publishColor();
             });
 
+            var handleStart = function (evt) {
+                bCanPreview = true;
+                log("handleStart");
+            };
 
-//            jqPreview.click(function (e) { // preview click
-////                $('.colorpicker').fadeToggle("slow", "linear");
-//                bCanPreview = true;
-//            });
+            var handleMove = function (evt) {
+                evt.preventDefault();
+                log("handleMove");
+                moveEvent(evt);
+            };
 
+            var handleEnd = function (evt) {
+                log("handleEnd");
+                bCanPreview = false;
+            };
+
+            var handleCancel = function (evt) {
+                log("handleCancel");
+            };
+
+            function startup() {
+                var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (iOS) {
+                    var el = document.body;
+
+                    el.removeEventListener("touchstart", handleStart);
+                    el.removeEventListener("touchend", handleEnd);
+                    el.removeEventListener("touchcancel", handleCancel);
+                    el.removeEventListener("touchleave", handleEnd);
+                    el.removeEventListener("touchmove", handleMove);
+
+                    el.addEventListener("touchstart", handleStart, false);
+                    el.addEventListener("touchend", handleEnd, false);
+                    el.addEventListener("touchcancel", handleCancel, false);
+                    el.addEventListener("touchleave", handleEnd, false);
+                    el.addEventListener("touchmove", handleMove, false);
+                    log('iOS');
+                }
+                log("initialized.");
+            }
+
+            startup();
         };
 
 
@@ -427,10 +283,12 @@
 
     $(document).ready(function () {
         init();
+        setTimeout(function () {
+            $(fnGenerator('#picker1', '.preview1'));
+            $(fnGenerator('#picker2', '.preview2'));
+            $(fnGenerator('#picker3', '.preview3'));
+        }, 100);
     });
-    $(fnGenerator('#picker1', '.preview1'));
-    $(fnGenerator('#picker2', '.preview2'));
-    $(fnGenerator('#picker3', '.preview3'));
 
 
 </script>
