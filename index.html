@@ -2,36 +2,66 @@
 <head>
     <title>QRX PLAY</title>
     <script src="jquery-1.11.3.js"></script>
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>-->
-    <!--<meta name="viewport" content="width=device-width, user-scalable=no"/>-->
+    <script type="text/javascript" src="smoothscroll.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/> -->
+    <!-- <meta name="viewport" content="width=device-width, user-scalable=no"/> -->
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #ccc;
+        }
         /* colorpicker styles */
+        .top-section {
+            background: #000;
+            background: rgba(0,0,0,0.5);
+            height: 70px;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
         .colorpicker {
-            background-color: #222222;
+            /*background-color: #222222;
             border-radius: 5px 5px 5px 5px;
-            box-shadow: 2px 2px 2px #444444;
+            box-shadow: 2px 2px 2px #444444;*/
             /*color: #FFFFFF;*/
             font-size: 12px;
             width: 460px;
         }
 
+        .preview-block {
+            margin: 10px;
+            float: left;
+            margin-right: 5px;
+        }
+
         #picker1, #picker2, #picker3 {
             cursor: crosshair;
-            float: left;
-            margin: 10px;
+            clear: both;
+            margin: 0 0 30px 0;
             border: 0;
         }
 
         .controls {
-            float: right;
             margin: 10px;
+            overflow: hidden;
+            float: left;
+            margin-left: 0;
+            width: 200px;
         }
 
         .controls > div {
-            border: 1px solid #2F2F2F;
+            border: 1px solid #ccc;
+            border-radius: 3px;
             margin-bottom: 5px;
             overflow: hidden;
-            padding: 5px;
+            padding: 4px;
+            float: left;
+            margin-right: 5px;
+            height: 13px;
         }
 
         .controls label {
@@ -39,28 +69,50 @@
         }
 
         .controls > div input {
-            background-color: #121212;
-            border: 1px solid #2F2F2F;
-            color: #DDDDDD;
+            background-color: #ccc;
+            border: 1px solid #ccc;
+            color: #000;
             float: right;
             font-size: 10px;
             height: 14px;
-            margin-left: 6px;
+            margin-left: 3px;
             text-align: center;
             text-transform: uppercase;
-            width: 75px;
+            width: 23px;
+        }
+
+        .controls > div.hex input {
+            width: 55px;
         }
 
         .preview1, .preview2, .preview3 {
             /*background: url("../images/select.png") repeat scroll center center transparent;*/
-            border-radius: 3px;
-            box-shadow: 2px 2px 2px #444444;
+            border-radius: 2px;
+            border: 1px solid #ccc;
+            /*box-shadow: 2px 2px 2px #444444;*/
             cursor: pointer;
-            height: 30px;
-            width: 30px;
             float: left;
-            margin: 5px;
+            margin-right: 5px;
+            text-align: center;
+            padding: 15px 15px;
+            font-weight: lighter;
+            color: #FFF;
+            text-shadow: 1px 1px 1px #444444;;
         }
+        .picker-block {
+            margin: auto;
+            text-align: center;
+        }
+
+        #picker3 {
+            margin-bottom: 500px;
+        }
+        #num1, #num2, #num3 {
+            padding-top: 60px;
+            border-top: 1px dashed #eee;
+        }
+
+
 
     </style>
 
@@ -101,19 +153,22 @@
 </head>
 
 <body>
+<div class="top-section">
+    <div class="preview-block">
+        <a data-scroll data-options='{ "easing": "easeOutQuad" }' href="#num1"><div class="preview1">1</div></a>
+        <a data-scroll data-options='{ "easing": "easeOutQuad" }' href="#num2"><div class="preview2">2</div></a>
+        <a data-scroll data-options='{ "easing": "easeOutQuad" }' href="#num3"><div class="preview3">3</div></a>
+    </div>
 
-<div class="preview1"></div>
-<div class="preview2"></div>
-<div class="preview3"></div>
-
-<!-- colorpicker element -->
-<div class="colorpicker">
-    <div class="controls">
-        <div><label>R</label> <input type="text" id="rVal"/></div>
-        <div><label>G</label> <input type="text" id="gVal"/></div>
-        <div><label>B</label> <input type="text" id="bVal"/></div>
-        <div><label>RGB</label> <input type="text" id="rgbVal"/></div>
-        <div><label>HEX</label> <input type="text" id="hexVal"/></div>
+    <!-- colorpicker element -->
+    <div class="colorpicker">
+        <div class="controls">
+            <div><label>R</label> <input type="text" id="rVal"/></div>
+            <div><label>G</label> <input type="text" id="gVal"/></div>
+            <div><label>B</label> <input type="text" id="bVal"/></div>
+            <!-- <div><label>RGB</label> <input type="text" id="rgbVal"/></div> -->
+            <div class="hex"><label>HEX</label> <input type="text" id="hexVal"/></div>
+        </div>
     </div>
 </div>
 
@@ -292,16 +347,14 @@
 
 
 </script>
-<canvas id="picker1" var="2" width="300" height="300"></canvas>
-<canvas id="picker2" var="2" width="300" height="300"></canvas>
-<canvas id="picker3" var="2" width="300" height="300"></canvas>
-<!--<canvas id="picker" var="2" width="300" height="300"></canvas>-->
-<!--or-->
-<!--<canvas id="picker" var="3" width="300" height="300"></canvas>-->
-<!--or-->
-<!--<canvas id="picker" var="4" width="300" height="300"></canvas>-->
-<!--or-->
-<!--<canvas id="picker" var="5" width="300" height="300"></canvas>-->
+<div class="picker-block">
+    <div id="num1"> <h2>1. UMBELLA</h2></div>
+    <canvas id="picker1" var="2" width="300" height="300"></canvas>
+    <div id="num2"> <h2>2. BEER</h2></div>
+    <canvas id="picker2" var="2" width="300" height="300"></canvas>
+    <div id="num3"> <h2>3. BALLOON</h2></div>
+    <canvas id="picker3" var="2" width="300" height="300"></canvas>
+</div>
 </body>
 
 </html>
